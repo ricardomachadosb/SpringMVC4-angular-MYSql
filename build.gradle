@@ -50,8 +50,11 @@ dependencies {
 	
 	//dataBase
 	compile 'mysql:mysql-connector-java:5.1.37'
-	compile 'org.hibernate:hibernate-core:5.0.4.Final'
+	compile 'org.hibernate:hibernate-core:4.3.11.Final'
 	compile 'org.springframework:spring-jdbc:4.2.3.RELEASE'
+	compile 'javax.transaction:jta:1.1'
+	compile 'org.springframework:spring-orm:4.0.3.RELEASE'
+	compile 'org.springframework:spring-context:4.2.3.RELEASE'
 	
 	
 }

@@ -6,7 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.democratic.restaurant.dao.RestaurantDao;
 import com.democratic.restaurant.model.Restaurant;
@@ -16,20 +21,26 @@ import com.democratic.restaurant.model.Restaurant;
  *
  */
 @Repository
+@Transactional
 public class RestaurantDaoMockedImpl implements RestaurantDao{
 	
 	private static List<Restaurant> restaurantList = null;
 	private static Map<Integer, Integer> votes = new HashMap<Integer, Integer>();
 	private static List<Restaurant> weekWinners = new ArrayList<Restaurant>();
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+
+	protected Session getSession() {
+		return sessionFactory.getCurrentSession();
+	}
 
 	@Override
 	public List<Restaurant> list() {
+		Criteria criteria = getSession().createCriteria(Restaurant.class);
+		List<Restaurant> restaurants = (List<Restaurant>) criteria.list();
 		
-		if(restaurantList != null){
-			return restaurantList;
-		}
-		
-		return gererateRestaurants();
+		return restaurants;
 	}
 	
 	/**

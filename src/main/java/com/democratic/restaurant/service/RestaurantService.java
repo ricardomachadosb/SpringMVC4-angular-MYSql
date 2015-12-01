@@ -39,6 +39,7 @@ public class RestaurantService {
 			
 			restaurantDatas = buildRestaurantDatas(restaurants);
 		}catch(Exception e){
+			e.printStackTrace();
 			throw new RestaurantException(LIST_DEFAULT_ERROR_MESSAGE, e);
 		}
 		
