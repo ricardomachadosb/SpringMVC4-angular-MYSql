@@ -11,6 +11,7 @@ import com.democratic.restaurant.dao.RestaurantDao;
 import com.democratic.restaurant.datas.RestaurantData;
 import com.democratic.restaurant.exception.RestaurantException;
 import com.democratic.restaurant.model.Restaurant;
+import com.democratic.restaurant.model.WeekWinner;
 
 /**
  * @author Ricardo Machado
@@ -34,8 +35,12 @@ public class RestaurantService {
 		
 		try {
 			restaurants = restaurantDao.list();
+			List<Restaurant> weekWinnersRestaurants = new ArrayList<Restaurant>();
 			
-			restaurants.removeAll(restaurantDao.getWeekWinners());
+			for(WeekWinner ww: restaurantDao.getWeekWinners()){
+				weekWinnersRestaurants.add(ww.getRestaurant());
+			}
+			restaurants.removeAll(weekWinnersRestaurants);
 			
 			restaurantDatas = buildRestaurantDatas(restaurants);
 		}catch(Exception e){

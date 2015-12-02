@@ -25,22 +25,37 @@ public class Restaurant {
 	
 	public Restaurant() {}
 	
+	/**
+	 * @param name
+	 */
 	public Restaurant(String name){
 		this.name = name;
 	}
 	
+	/**
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * @param name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 	
+	/**
+	 * @return
+	 */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * @param id
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.democratic.restaurant.model.Restaurant;
+import com.democratic.restaurant.model.WeekWinner;
 
 /**
  * @author Ricardo Machado
@@ -21,7 +22,7 @@ public interface RestaurantDao {
 	
 	public void clearWeekWinnersHistory();
 	
-	public List<Restaurant> getWeekWinners();
+	public List<WeekWinner> getWeekWinners();
 	
 	public Map<Restaurant, Integer> getResultMap();
 	

@@ -1,7 +1,5 @@
 package com.democratic.restaurant.dao.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.democratic.restaurant.dao.RestaurantDao;
 import com.democratic.restaurant.model.Restaurant;
 import com.democratic.restaurant.model.Votes;
+import com.democratic.restaurant.model.WeekWinner;
 
 /**
  * @author Ricardo Machado
@@ -24,11 +23,7 @@ import com.democratic.restaurant.model.Votes;
  */
 @Repository
 @Transactional
-public class RestaurantDaoMockedImpl implements RestaurantDao{
-	
-	private static List<Restaurant> restaurantList = null;
-	private static Map<Integer, Integer> votes = new HashMap<Integer, Integer>();
-	private static List<Restaurant> weekWinners = new ArrayList<Restaurant>();
+public class RestaurantDaoImpl implements RestaurantDao{
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -40,6 +35,8 @@ public class RestaurantDaoMockedImpl implements RestaurantDao{
 	@Override
 	public List<Restaurant> list() {
 		Criteria criteria = getSession().createCriteria(Restaurant.class);
+		
+		@SuppressWarnings("unchecked")
 		List<Restaurant> restaurants = (List<Restaurant>) criteria.list();
 		
 		return restaurants;
@@ -73,16 +70,33 @@ public class RestaurantDaoMockedImpl implements RestaurantDao{
 	
 	@Override
 	public void clearCurrentVoteData() {
-		votes.clear();
+		Criteria criteria = getSession().createCriteria(Votes.class);
+		
+		@SuppressWarnings("unchecked")
+		List<Votes> votes = (List<Votes>) criteria.list();
+		for(Votes vt: votes){
+			getSession().delete(vt);
+		}
 	}
 
 	@Override
 	public void clearWeekWinnersHistory() {
-		weekWinners.clear();
+		Criteria criteria = getSession().createCriteria(WeekWinner.class);
+		
+		@SuppressWarnings("unchecked")
+		List<WeekWinner> weekWinners = (List<WeekWinner>) criteria.list();
+		for(WeekWinner ww: weekWinners){
+			getSession().delete(ww);
+		}
 	}
 
 	@Override
-	public List<Restaurant> getWeekWinners() {
+	public List<WeekWinner> getWeekWinners() {
+		Criteria criteria = getSession().createCriteria(WeekWinner.class);
+		
+		@SuppressWarnings("unchecked")
+		List<WeekWinner> weekWinners = (List<WeekWinner>) criteria.list();
+		
 		return weekWinners;
 	}
 
@@ -90,15 +104,23 @@ public class RestaurantDaoMockedImpl implements RestaurantDao{
 	public Map<Restaurant, Integer> getResultMap() {
 		Map<Restaurant, Integer> resultMap = new LinkedHashMap<Restaurant, Integer>();
 		
-		for(Map.Entry<Integer, Integer> entry: votes.entrySet()){
-			resultMap.put(get(entry.getKey()), entry.getValue());
+		Criteria criteria = getSession().createCriteria(Votes.class);
+		
+		@SuppressWarnings("unchecked")
+		List<Votes> votes = (List<Votes>) criteria.list();
+		
+		for(Votes vt: votes){
+			resultMap.put(vt.getRestaurant(), vt.getVoutsCount());
 		}
 		
 		return resultMap;
+		
 	}
 
 	@Override
 	public void addWeekWinner(Restaurant restaurant) {
-		weekWinners.add(restaurant);
+		WeekWinner ww = new WeekWinner();
+		ww.setRestaurant(restaurant);
+		getSession().save(ww);
 	}
 }
