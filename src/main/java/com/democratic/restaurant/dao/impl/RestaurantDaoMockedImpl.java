@@ -9,12 +9,14 @@ import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.democratic.restaurant.dao.RestaurantDao;
 import com.democratic.restaurant.model.Restaurant;
+import com.democratic.restaurant.model.Votes;
 
 /**
  * @author Ricardo Machado
@@ -43,52 +45,30 @@ public class RestaurantDaoMockedImpl implements RestaurantDao{
 		return restaurants;
 	}
 	
-	/**
-	 * @return
-	 */
-	private List<Restaurant> gererateRestaurants(){
-		
-		List<Restaurant> restaurants = new ArrayList<>();
-		
-		restaurants.add(new Restaurant("Rica Pancita"));
-		restaurants.add(new Restaurant("Bom de Prato"));
-		restaurants.add(new Restaurant("Casarão"));
-		restaurants.add(new Restaurant("Panquecas da vovó"));
-		restaurants.add(new Restaurant("Xis do Gordo")); 
-		
-		for(int i = 0; i < restaurants.size(); i++){
-			restaurants.get(i).setId(i);
-		}
-		
-		restaurantList = restaurants;
-		
-		return restaurants;
-	}
-	
 	@Override
 	public Restaurant get(Integer id) {
-		Restaurant restaurantToReturn = null;
-		if(restaurantList == null){
-			return restaurantToReturn;
-		}
-		
-		for(Restaurant restaurant: restaurantList){
-			if(id.equals(restaurant.getId())){
-				restaurantToReturn = restaurant;
-				break;
-			}
-		}
-		
-		return restaurantToReturn;
+		Restaurant restaurant = (Restaurant) getSession().get(Restaurant.class, id);
+		return restaurant;
 	}
 	
 	@Override
 	public void vote(Restaurant restaurant) {
-		if(votes.containsKey(restaurant.getId())){
-			votes.put(restaurant.getId(), (votes.get(restaurant.getId())+1));
+		
+		Criteria criteria = getSession().createCriteria( Votes.class );
+		criteria.createCriteria( "restaurant", "r");
+		criteria.add( Restrictions.eq( "r.id", restaurant.getId()));
+		Votes votes = (Votes) criteria.uniqueResult();
+		
+		
+		if(votes != null){
+			votes.setVoutsCount(votes.getVoutsCount() + 1);
 		}else {
-			votes.put(restaurant.getId(), 1);
+			votes = new Votes();
+			votes.setRestaurant(restaurant);
+			votes.setVoutsCount(1);
 		}
+		
+		getSession().save(votes);
 	}
 	
 	@Override
